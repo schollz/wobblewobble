@@ -1,4 +1,16 @@
--- wobble 
+-- wobble v0.0.1
+-- wobbly voltages for crow
+--
+-- llllllll.co/t/wobble
+--
+--
+--
+--    ▼ instructions below ▼
+-- hold K1 to switch crow out
+-- K2/K3 switch modulator
+-- E1 changes frequency
+-- E2 changes min
+-- E3 changes max
 
 ww=include("wobblewobble/lib/wobblewobble")
 
@@ -14,20 +26,26 @@ end
 
 function key(k,z)
 	if k==2 and z==1 then 
-		params:delta("modulation",-1)
+		params:delta(params:get("crow").."modulation",-1)
 	elseif k==3 and z==1 then 
-		params:delta("modulation",1)
+		params:delta(params:get("crow").."modulation",1)
+	elseif k==1 and z==1 then
+		if params:get("crow")==4 then 
+			params:set("crow",1)
+		else
+			params:delta("crow",1)
+		end
 	end
 
 end
 
 function enc(k,d)
 	if k==1 then
-		params:delta(params:get("modulation").."freq",d)
+		params:delta(params:get("crow").."freq",d)
 	elseif k==2 then 
-		params:delta(params:get("modulation").."minval",d)
+		params:delta(params:get("crow").."minval",d)
 	else
-		params:delta(params:get("modulation").."maxval",d)
+		params:delta(params:get("crow").."maxval",d)
 	end
 end
 
@@ -43,33 +61,31 @@ function redraw()
 	end
 
 	screen.level(8)
-	local s= cur.name.." @ "..cur.freq.." hz ["..(math.floor(cur.min*100)/100)..","..(math.floor(cur.max*100)/100).."]"
-	screen.rect(2,64-15,screen.text_extents(s)+4,10)
+	local s= cur.name
+	screen.rect(2,64-20,screen.text_extents(s)+4,10)
 	screen.fill()
 	screen.level(0)
-	screen.move(4,64-8)
+	screen.move(4,64-13)
 	screen.text(s)
 	screen.stroke()
 
 	screen.level(8)
-	local s=""
-	for i=1,4 do 
-		if params:get(i.."crow")-1==params:get("modulation") then 
-			if s=="" then 
-				s = "crow "..i
-			else
-				s = s..", "..i
-			end
-		end
-	end
-	if s~="" then
-		screen.rect(2,2,screen.text_extents(s)+4,8)
-		screen.fill()
-		screen.level(0)
-		screen.move(4,8)
-		screen.text(s)
-		screen.stroke()
-	end
+	s=(math.floor(cur.freq*1000)/1000).." hz ["..(math.floor(cur.min*100)/100)..","..(math.floor(cur.max*100)/100).."]"
+	screen.rect(2,64-7,screen.text_extents(s)+4,10)
+	screen.fill()
+	screen.level(0)
+	screen.move(4,64-1)
+	screen.text(s)
+	screen.stroke()
+
+	screen.level(8)
+	local s="crow "..cur.crow
+	screen.rect(2,2,screen.text_extents(s)+4,8)
+	screen.fill()
+	screen.level(0)
+	screen.move(4,8)
+	screen.text(s)
+	screen.stroke()
 
 	screen.update()
 end
