@@ -10,7 +10,7 @@ end
 
 function Wobble:init()
   -- setup modulations
-  self.modulations={"sine","wobbly sine","drunk snek","lorenz","henon"}
+  self.modulations={"sine","wobbly sine","drunk snek","lorenz","henon","random walk"}
   self.outputs={"none"}
   for _, mod in ipairs(self.modulations) do 
     table.insert(self.outputs,mod)

@@ -54,7 +54,16 @@ Engine_Wobble : CroneEngine {
         SynthDef("modulator5",{
             arg hz=1,minval=0,maxval=1,index=2;
             var mod;
-            mod=mod=HenonC.ar(hz*5,LFNoise0.kr(17).range(1,2),LFNoise0.kr(11).range(0.2,0.4)).range(minval*1.02,maxval*0.98);   
+            mod=HenonC.ar(hz*5,LFNoise0.kr(17).range(1,2),LFNoise0.kr(11).range(0.2,0.4)).range(minval*1.02,maxval*0.98);   
+            SendTrig.kr(Impulse.kr(15),index,mod);      
+            mod=Clip.kr(mod,minval,maxval);
+        }).add; 
+
+        // random walk
+        SynthDef("modulator6",{
+            arg hz=1,minval=0,maxval=1,index=2;
+            var mod;
+            mod=VarLag.kr(LFBrownNoise0.kr(hz),1/hz,warp:\sine).range(minval,maxval);
             SendTrig.kr(Impulse.kr(15),index,mod);      
             mod=Clip.kr(mod,minval,maxval);
         }).add; 
@@ -69,7 +78,7 @@ Engine_Wobble : CroneEngine {
              NetAddr("127.0.0.1", 10111).sendMsg("wobble",msg[2],msg[3]);
         },'/tr', context.server.addr);
         
-        modulatorsWobble = Array.fill(5,{arg i;
+        modulatorsWobble = Array.fill(6,{arg i;
             Synth("modulator"++(i+1),[\index,i+1], target:context.xg);
         });
 
@@ -98,7 +107,7 @@ Engine_Wobble : CroneEngine {
     free {
         // Wobble Specific v0.0.1
         osfunWobble.free;
-        (0..5).do({arg i; modulatorsWobble[i].free});
+        (0..6).do({arg i; modulatorsWobble[i].free});
         modulatorsWobble.free;
          // ^ Wobble specific
     }
