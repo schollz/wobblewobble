@@ -15,9 +15,9 @@ Engine_Wobble : CroneEngine {
     alloc {
         // Wobble specific v0.0.1
         SynthDef("modulator1",{
-            arg hz=1,minval=0,maxval=1,index=1;
+            arg hz=1,minval=0,maxval=1,index=1,type=1;
             var mod;
-            mod=SinOsc.kr(hz).range(minval,maxval);
+            mod=(type&1)*SinOsc.kr(hz).range(minval,maxval);
             SendTrig.kr(Impulse.kr(15),index,mod);      
         }).add;
 
