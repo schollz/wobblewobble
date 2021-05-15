@@ -42,6 +42,7 @@ function Wobble:init()
   -- menu stuff
   self.param_names={"minval","maxval","freq","period","modulation","midiin","miditype","clampmin","clampmax"}
   self.midi_names={"level","attack","decay","sustain","release"}
+  self.midi_types={"envelope","any note","top note"}
   -- setup modulations
   self.modulations={"constant","sine","triangle","wobbly sine","snek","lorenz","henon","random walk"}
   self.outputs={"none"}
@@ -177,7 +178,7 @@ function Wobble:init()
       _menu.rebuild_params()
     end
     }
-    params:add{type="option",id=i.."miditype",name="midi type",options={"envelope","any note","top note"},default=1,action=function(v)
+    params:add{type="option",id=i.."miditype",name="midi type",options=self.midi_types,default=1,action=function(v)
       self:setmidi(i)
       self:rebuild_menu(i)
       _menu.rebuild_params()
@@ -262,6 +263,7 @@ function Wobble:get()
     min=params:get(i.."minval"),
     max=params:get(i.."maxval"),
     midi=midiname,
+    miditype=self.midi_types[params:get(i.."miditype")],
   }
 end
 
