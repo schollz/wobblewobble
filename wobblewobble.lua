@@ -80,12 +80,16 @@ function redraw()
 
 	screen.level(8)
 	local s="crow "..cur.crow
+	if cur.midi ~= "" then 
+		s=s.." < "..cur.midi 
+	end
 	screen.rect(2,2,screen.text_extents(s)+4,8)
 	screen.fill()
 	screen.level(0)
 	screen.move(4,8)
 	screen.text(s)
 	screen.stroke()
+
 
 	screen.update()
 end

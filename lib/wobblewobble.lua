@@ -9,7 +9,6 @@ function Wobble:new(args)
 end
 
 function Wobble:rebuild_menu(v)
-  self.param_names={"minval","maxval","freq","period","modulation"}
   for _,param_name in ipairs(self.param_names) do
     for i=1,4 do
       if i==v then
@@ -19,9 +18,22 @@ function Wobble:rebuild_menu(v)
       end
     end
   end
+  for _,param_name in ipairs(self.midi_names) do
+    for i=1,4 do
+      if i==v and params:get(i.."miditype")==1 then
+        print("showing "..v)
+        params:show(i..param_name)
+      else
+        params:hide(i..param_name)
+      end
+    end
+  end
 end
 
 function Wobble:init()
+  -- menu stuff
+  self.param_names={"minval","maxval","freq","period","modulation","midiin","miditype","clampmin","clampmax"}
+  self.midi_names={"level","attack","decay","sustain","release"}
   -- setup modulations
   self.modulations={"constant","sine","triangle","wobbly sine","snek","lorenz","henon","random walk"}
   self.outputs={"none"}
@@ -34,11 +46,72 @@ function Wobble:init()
     print("engine loaded")
     params:default()
     params:bang()
+    params:set("crow",1)
+    self:rebuild_menu(1)
   end)
   engine.name="Wobble"
 
+  -- setup midi
+  self.mididevice_list={"none"}
+  local midi_channels={"all"}
+  for i=1,16 do
+    table.insert(midi_channels,i)
+  end
+  for _,dev in pairs(midi.devices) do
+    if dev.port~=nil then
+      local name=string.lower(dev.name)
+      table.insert(self.mididevice_list,name)
+      print("adding "..name.." to port "..dev.port)
+      local connection=midi.connect(dev.port)
+      local notes={}
+      connection.event=function(data)
+        for i=1,4 do 
+          if self.mididevice_list[params:get(i.."midiin")]==name then
+            -- process midi
+            local d=midi.to_msg(data)
+            if d.type=="note_on" then 
+              print(i,name,"midi on",d.note)
+              local highest_note=true 
+              if params:get(i.."miditype")==3 then -- top note 
+                for k,_ in pairs(notes) do
+                  if k>d.note then 
+                    highest_note=false
+                    break
+                  end
+                end
+              end
+              if highest_note then
+                engine.setmidi(i,d.note)
+              end
+              notes[d.note]=true
+            elseif d.type=="note_off" then 
+              print(i,name,"midi off",d.note)
+              notes[d.note]=nil
+              local have_notes=false
+              for k,v in pairs(notes) do 
+                have_notes=true 
+                break
+              end
+              if not have_notes then
+                engine.setmidi(i,0)
+              end
+            end
+          end
+        end
+        -- if d.ch~=midi_channels[params:get("midichannel")] and params:get("midichannel")>1 then
+        --   do return end
+        -- end
+        -- if d.type=="note_on" then
+        --   skeys:on({name=available_instruments[instrument_current].id,midi=data[2],velocity=data[3]})
+        -- elseif d.type=="note_off" then
+        --   skeys:off({name=available_instruments[instrument_current].id,midi=data[2]})
+        -- end
+      end
+    end
+  end
+
   -- setup parameters
-  params:add_group("WOBBLE",21)
+  params:add_group("WOBBLE",1+12*4)
   params:add{type="option",id="crow",name="crow",options={"1","2","3","4"},default=1,action=function(v)
     self:rebuild_menu(v)
     _menu.rebuild_params()
@@ -46,7 +119,17 @@ function Wobble:init()
   }
   for i=1,4 do
     params:add{type="option",id=i.."modulation",name="modulation",options=self.modulations,default=1,action=function(v)
-      engine.mod(i,v,params:get(i.."freq"),params:get(i.."minval"),params:get(i.."maxval"))
+      engine.mod(i,v,
+        params:get(i.."freq"),
+        params:get(i.."minval"),
+        params:get(i.."maxval"),
+        params:get(i.."level"),
+        params:get(i.."attack"),
+        params:get(i.."decay"),
+        params:get(i.."sustain"),
+        params:get(i.."release")
+      )
+      self:setmidi(i)
     end
     }
     local do_update=true
@@ -70,12 +153,44 @@ function Wobble:init()
       do_update=true
     end
     }
-    params:add{type="control",id=i.."minval",name="min",controlspec=controlspec.new(-5,10,'lin',0,0,'',0.01/20),action=function(v)
+    params:add{type="control",id=i.."minval",name="lfo min",controlspec=controlspec.new(-5,10,'lin',0,0,'',0.01/15),action=function(v)
       engine.minval(i,v)
     end
     }
-    params:add{type="control",id=i.."maxval",name="max",controlspec=controlspec.new(-5,10,'lin',0,5,'',0.01/20),action=function(v)
+    params:add{type="control",id=i.."maxval",name="lfo max",controlspec=controlspec.new(-5,10,'lin',0,5,'',0.01/15),action=function(v)
       engine.maxval(i,v)
+    end
+    }
+    params:add{type="control",id=i.."clampmin",name="clamp min",controlspec=controlspec.new(-5,10,'lin',0,-5,'',0.01/15)}
+    params:add{type="control",id=i.."clampmax",name="clamp max",controlspec=controlspec.new(-5,10,'lin',0,10,'',0.01/15)}
+    params:add{type="option",id=i.."midiin",name="midi in",options=self.mididevice_list,default=1,action=function(v)
+      self:setmidi(i)
+    end
+    }
+    params:add{type="option",id=i.."miditype",name="midi type",options={"envelope","any note","top note"},default=1,action=function(v)
+      self:setmidi(i)
+      self:rebuild_menu(i)
+      _menu.rebuild_params()
+    end
+    }
+    params:add{type="control",id=i.."level",name="level",controlspec=controlspec.new(0,10,'lin',0,5,'v',0.1/10),action=function(v)
+      engine.level(i,v)      
+    end
+    }
+    params:add{type="control",id=i.."attack",name="attack",controlspec=controlspec.new(0,10,'lin',0,0.2,'s',0.01/10),action=function(v)
+      engine.attack(i,v)      
+    end
+    }
+    params:add{type="control",id=i.."decay",name="decay",controlspec=controlspec.new(0,10,'lin',0,0.5,'s',0.01/10),action=function(v)
+      engine.decay(i,v)      
+    end
+    }
+    params:add{type="control",id=i.."sustain",name="sustain",controlspec=controlspec.new(0,100,'lin',0,100,'%',1/100),action=function(v)
+      engine.sustain(i,v/100)      
+    end
+    }
+    params:add{type="control",id=i.."release",name="release",controlspec=controlspec.new(0,10,'lin',0,0.5,'s',0.01/10),action=function(v)
+      engine.release(i,v)      
     end
     }
   end
@@ -100,24 +215,43 @@ function Wobble:init()
        for j=1,127 do
          self.wf[i][j]=self.wf[i][j+1]
        end
-       local volts=util.clamp(tonumber(args[2]),-5,10)
+       local volts=util.clamp(tonumber(args[2]),params:get(i.."clampmin"),params:get(i.."clampmax"))
        crow.output[i].volts=volts
        self.wf[i][128]=math.floor(util.linlin(-5,10,64,1,volts))
      end
    end
   end
+end
 
-  self:rebuild_menu(1)
+function Wobble:setmidi(i)
+  if params:get(i.."midiin")==1 then 
+    print("adding nothing")
+    engine.addenv(i,0)
+    engine.addmidi(i,0)
+  elseif params:get(i.."miditype")==1 then 
+    print("adding env")
+    engine.addenv(i,1)
+    engine.addmidi(i,0)
+  else
+    print("adding midi")
+    engine.addenv(i,0)
+    engine.addmidi(i,1)
+  end
 end
 
 function Wobble:get()
   local i=params:get("crow")
+  local midiname=self.mididevice_list[params:get(i.."midiin")]
+  if midiname=="none" then 
+    midiname=""
+  end
   return {
     crow=i,
     name=self.modulations[params:get(i.."modulation")],
     wf=self.wf[i],freq=params:get(i.."freq"),
     min=params:get(i.."minval"),
     max=params:get(i.."maxval"),
+    midi=midiname,
   }
 end
 

@@ -15,46 +15,115 @@ Engine_Wobble : CroneEngine {
     alloc {
         // Wobble specific v0.0.1
         SynthDef("modulator1",{
-            arg hz=1,minval=0,maxval=0,index=1;
+            arg hz=1,minval=0,maxval=1,index=1,
+            midigate=0,midival=0,addenv=0,addmidi=0,
+            level=5,attack=0.2,sustain=0.9,decay=0.1,release=0.5;
+            var mod,env;
             // 1) constant value
-            SendTrig.kr(Impulse.kr(15),index,maxval);      
+            mod = maxval;
+            env = EnvGen.kr(
+                Env.new(
+                    levels: [0,level,sustain*level,0],
+                    times: [attack,decay,release],
+                    curve:\cubed,
+                    releaseNode: 2,
+                ),
+                gate: midigate,
+            );
+            mod = mod + (addenv*env);
+            mod = mod + (addmidi*((midival-48)/12));
+            SendTrig.kr(Impulse.kr(15),index,mod);      
         }).add;
 
         SynthDef("modulator2",{
-            arg hz=1,minval=0,maxval=0,index=1;
-            var mod;
+            arg hz=1,minval=0,maxval=1,index=1,
+            midigate=0,midival=0,addenv=0,addmidi=0,
+            level=5,attack=0.2,sustain=0.9,decay=0.1,release=0.5;
+            var mod,env;
             // sine
             mod=SinOsc.kr(hz).range(minval,maxval);
+            env = EnvGen.kr(
+                Env.new(
+                    levels: [0,level,sustain*level,0],
+                    times: [attack,decay,release],
+                    curve:\cubed,
+                    releaseNode: 2,
+                ),
+                gate: midigate,
+            );
+            mod = mod + (addenv*env);
+            mod = mod + (addmidi*((midival-48)/12));
             SendTrig.kr(Impulse.kr(15),index,mod);      
         }).add;
 
         SynthDef("modulator3",{
-            arg hz=1,minval=0,maxval=0,index=1;
-            var mod;
+            arg hz=1,minval=0,maxval=1,index=1,
+            midigate=0,midival=0,addenv=0,addmidi=1,
+            level=5,attack=0.2,sustain=0.9,decay=0.1,release=0.5;
+            var mod,env;
             // triangle
             mod=LFTri.kr(hz).range(minval,maxval);
+            env = EnvGen.kr(
+                Env.new(
+                    levels: [0,level,sustain*level,0],
+                    times: [attack,decay,release],
+                    curve:\cubed,
+                    releaseNode: 2,
+                ),
+                gate: midigate,
+            );
+            mod = mod + (addenv*env);
+            mod = mod + (addmidi*((midival-48)/12));
             SendTrig.kr(Impulse.kr(15),index,mod);      
         }).add;
 
         SynthDef("modulator4",{
-            arg hz=1,minval=0,maxval=0,index=1;
-            var mod;
+            arg hz=1,minval=0,maxval=1,index=1,
+            midigate=0,midival=0,addenv=0,addmidi=1,
+            level=5,attack=0.2,sustain=0.9,decay=0.1,release=0.5;
+            var mod,env;
             // wobbly sine
             mod=SinOsc.kr(VarLag.kr(LFNoise0.kr(hz*2).range(0,hz*2),1/(hz*2),warp:\sine)).range(minval,maxval);
+            env = EnvGen.kr(
+                Env.new(
+                    levels: [0,level,sustain*level,0],
+                    times: [attack,decay,release],
+                    curve:\cubed,
+                    releaseNode: 2,
+                ),
+                gate: midigate,
+            );
+            mod = mod + (addenv*env);
+            mod = mod + (addmidi*((midival-48)/12));
             SendTrig.kr(Impulse.kr(15),index,mod);      
         }).add;
 
         SynthDef("modulator5",{
-            arg hz=1,minval=0,maxval=0,index=1;
-            var mod;
+            arg hz=1,minval=0,maxval=1,index=1,
+            midigate=0,midival=0,addenv=0,addmidi=1,
+            level=5,attack=0.2,sustain=0.9,decay=0.1,release=0.5;
+            var mod,env;
             // snek
             mod=VarLag.kr(LFNoise0.kr(hz).range(minval,maxval),1/(hz),warp:\sine);
+            env = EnvGen.kr(
+                Env.new(
+                    levels: [0,level,sustain*level,0],
+                    times: [attack,decay,release],
+                    curve:\cubed,
+                    releaseNode: 2,
+                ),
+                gate: midigate,
+            );
+            mod = mod + (addenv*env);
+            mod = mod + (addmidi*((midival-48)/12));
             SendTrig.kr(Impulse.kr(15),index,mod);      
         }).add;
 
         SynthDef("modulator6",{
-            arg hz=1,minval=0,maxval=0,index=1;
-            var mod;
+            arg hz=1,minval=0,maxval=1,index=1,
+            midigate=0,midival=0,addenv=0,addmidi=1,
+            level=5,attack=0.2,sustain=0.9,decay=0.1,release=0.5;
+            var mod,env;
             // lorenz
             mod=LorenzL.ar(
                     hz*10,
@@ -62,22 +131,59 @@ Engine_Wobble : CroneEngine {
                     LFNoise0.kr(hz*10/20, 20, 38),
                     LFNoise0.kr(hz*10/20, 1.5, 2)
                 ).range(minval,maxval);
+            env = EnvGen.kr(
+                Env.new(
+                    levels: [0,level,sustain*level,0],
+                    times: [attack,decay,release],
+                    curve:\cubed,
+                    releaseNode: 2,
+                ),
+                gate: midigate,
+            );
+            mod = mod + (addenv*env);
+            mod = mod + (addmidi*((midival-48)/12));
             SendTrig.kr(Impulse.kr(15),index,mod);      
         }).add;
 
         SynthDef("modulator7",{
-            arg hz=1,minval=0,maxval=0,index=1;
-            var mod;
+            arg hz=1,minval=0,maxval=1,index=1,
+            midigate=0,midival=0,addenv=0,addmidi=1,
+            level=5,attack=0.2,sustain=0.9,decay=0.1,release=0.5;
+            var mod,env;
             // henon
             mod=Clip.kr(HenonC.ar(hz,LFNoise0.kr(17).range(1,2),LFNoise0.kr(11).range(0.2,0.4)).range(minval*1.02,maxval*0.98),minval,maxval);
+            env = EnvGen.kr(
+                Env.new(
+                    levels: [0,level,sustain*level,0],
+                    times: [attack,decay,release],
+                    curve:\cubed,
+                    releaseNode: 2,
+                ),
+                gate: midigate,
+            );
+            mod = mod + (addenv*env);
+            mod = mod + (addmidi*((midival-48)/12));
             SendTrig.kr(Impulse.kr(15),index,mod);      
         }).add;
 
         SynthDef("modulator8",{
-            arg hz=1,minval=0,maxval=0,index=1;
-            var mod;
+    arg hz=1,minval=0,maxval=1,index=1,
+    midigate=0,midival=0,addenv=0,addmidi=1,
+    level=5,attack=0.2,sustain=0.9,decay=0.1,release=0.5;
+            var mod,env;
             // random walk
             mod=VarLag.kr(LFBrownNoise0.kr(hz),1/hz,warp:\sine).range(minval,maxval);
+            env = EnvGen.kr(
+                Env.new(
+                    levels: [0,level,sustain*level,0],
+                    times: [attack,decay,release],
+                    curve:\cubed,
+                    releaseNode: 2,
+                ),
+                gate: midigate,
+            );
+            mod = mod + (addenv*env);
+            mod = mod + (addmidi*((midival-48)/12));
             SendTrig.kr(Impulse.kr(15),index,mod);      
         }).add;
 
@@ -94,9 +200,19 @@ Engine_Wobble : CroneEngine {
             Synth("modulator1",[\index,i+1], target:context.xg);
         });
 
-        this.addCommand("mod","iifff", { arg msg;
+        this.addCommand("mod","iiffffffff", { arg msg;
             modulatorsWobble[msg[1]-1].free;
-            modulatorsWobble[msg[1]-1]=Synth("modulator"++msg[2],[\index,msg[1],\hz,msg[3],\minval,msg[4],\maxval,msg[5]], target:context.xg)
+            modulatorsWobble[msg[1]-1]=Synth("modulator"++msg[2],[
+                \index,msg[1],
+                \hz,msg[3],
+                \minval,msg[4],
+                \maxval,msg[5],
+                \level,msg[6],
+                \attack,msg[7],
+                \sustain,msg[8],
+                \decay,msg[9],
+                \release,msg[10]
+            ], target:context.xg)
         });
 
         this.addCommand("hz","if", { arg msg;
@@ -114,6 +230,56 @@ Engine_Wobble : CroneEngine {
         this.addCommand("maxval","if", { arg msg;
             modulatorsWobble[msg[1]-1].set(
                 \maxval,msg[2],
+            );
+        });
+
+        this.addCommand("setmidi","if", { arg msg;
+            if (msg[2]>0,{
+                "midi on".postln;
+                modulatorsWobble[msg[1]-1].set(
+                    \midigate,1,
+                    \midival,msg[2],
+                );
+            },{
+                "midi off".postln;
+                modulatorsWobble[msg[1]-1].set(
+                    \midigate,0,
+                );
+            });
+        });        
+        this.addCommand("addenv","if", { arg msg;
+            modulatorsWobble[msg[1]-1].set(
+                \addenv,msg[2],
+            );
+        });
+        this.addCommand("addmidi","if", { arg msg;
+            modulatorsWobble[msg[1]-1].set(
+                \addmidi,msg[2],
+            );
+        });
+        this.addCommand("level","if", { arg msg;
+            modulatorsWobble[msg[1]-1].set(
+                \level,msg[2],
+            );
+        });        
+        this.addCommand("attack","if", { arg msg;
+            modulatorsWobble[msg[1]-1].set(
+                \attack,msg[2],
+            );
+        });        
+        this.addCommand("sustain","if", { arg msg;
+            modulatorsWobble[msg[1]-1].set(
+                \sustain,msg[2],
+            );
+        });        
+        this.addCommand("decay","if", { arg msg;
+            modulatorsWobble[msg[1]-1].set(
+                \decay,msg[2],
+            );
+        });        
+        this.addCommand("release","if", { arg msg;
+            modulatorsWobble[msg[1]-1].set(
+                \release,msg[2],
             );
         });
         // ^ Wobble specific
