@@ -28,6 +28,14 @@ function Wobble:rebuild_menu(v)
       end
     end
   end
+  for i=1,4 do 
+    if params:get(i.."midiin")==1 then
+        for _,param_name in ipairs(self.midi_names) do
+          params:hide(i..param_name)
+        end
+        params:hide(i.."miditype")
+    end
+  end
 end
 
 function Wobble:init()
@@ -111,7 +119,7 @@ function Wobble:init()
   end
 
   -- setup parameters
-  params:add_group("WOBBLE",1+12*4)
+  params:add_group("WOBBLE",1+13*4)
   params:add{type="option",id="crow",name="crow",options={"1","2","3","4"},default=1,action=function(v)
     self:rebuild_menu(v)
     _menu.rebuild_params()
@@ -163,8 +171,10 @@ function Wobble:init()
     }
     params:add{type="control",id=i.."clampmin",name="clamp min",controlspec=controlspec.new(-5,10,'lin',0,-5,'',0.01/15)}
     params:add{type="control",id=i.."clampmax",name="clamp max",controlspec=controlspec.new(-5,10,'lin',0,10,'',0.01/15)}
-    params:add{type="option",id=i.."midiin",name="midi in",options=self.mididevice_list,default=1,action=function(v)
+    params:add{type="option",id=i.."midiin",name="midi input",options=self.mididevice_list,default=1,action=function(v)
       self:setmidi(i)
+      self:rebuild_menu(i)
+      _menu.rebuild_params()
     end
     }
     params:add{type="option",id=i.."miditype",name="midi type",options={"envelope","any note","top note"},default=1,action=function(v)
