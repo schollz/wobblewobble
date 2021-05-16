@@ -70,7 +70,10 @@ function redraw()
 	screen.stroke()
 
 	screen.level(8)
-	s=(math.floor(cur.freq*1000)/1000).." hz ["..(math.floor(cur.min*100)/100)..","..(math.floor(cur.max*100)/100).."]"
+	s=(math.floor(cur.freq*1000)/1000).."hz, "..(math.floor(cur.min*100)/100).."-"..(math.floor(cur.max*100)/100).."v"
+	if cur.name=="constant" then
+		s=(math.floor(cur.freq*1000)/1000).."hz, "..(math.floor(cur.max*100)/100).."v"
+	end
 	screen.rect(2,64-7,screen.text_extents(s)+4,10)
 	screen.fill()
 	screen.level(0)
