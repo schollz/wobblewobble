@@ -34,6 +34,12 @@ via the parameters menu, "`WOBBLE`", you can also...
 - clamp the minimum and maximum values of the lfo
 - add midi input to control pitch (top note, any note) or add an envelope
 
+## download
+
+```
+;install https://github.com/schollz/wobblewobble
+```
+
 ## license 
 
 mit 
