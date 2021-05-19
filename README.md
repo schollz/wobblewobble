@@ -15,6 +15,7 @@ assign each of the four crow outputs one of many different types of slowly oscil
 - random walk
 - latoocarfian
 - fbsine
+- quad
 
 each output can also be configured to respond to midi input, either modulating the voltage level via pitch (any note, or top note), or modulating the voltage level from an envelope.
 
@@ -35,6 +36,7 @@ via the parameters menu, "`WOBBLE`", you can also...
 
 - clamp the minimum and maximum values of the lfo
 - add midi input to control pitch (top note, any note) or add an envelope
+- meta param
 
 ## download
 
