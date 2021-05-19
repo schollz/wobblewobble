@@ -19,6 +19,11 @@ end
 function Wobble:grid_key(x,y,z)
     local currentout=params:get("crow")
 
+    if x == 1 and y == 1 and z == 1 then
+        self.tog = 1 - self.tog
+        self.g:led(1, 1, 15 * self.tog)
+    end
+
     if y > 1 and y < 6 then
         local crowmodkey = (y - 1).."modulation"
         local currentmod = params:get(crowmodkey)
@@ -66,14 +71,15 @@ end
 
 function Wobble:init()
   -- menu stuff
-  self.param_names={"minval","maxval","freq","period","modulation","midiin","miditype","clampmin","clampmax","meta"}
+  self.param_names={"minval","maxval","freq","period","modulation","midiin","miditype","clampmin","clampmax","meta","meta2"}
   self.midi_names={"level","attack","decay","sustain","release"}
   self.midi_types={"envelope","any note","top note"}
   -- setup modulations
-  self.modulations={"constant","sine","triangle","wobbly sine","snek","lorenz","henon","random walk","latoocarfian", "fbsine", "quad"}
+  self.modulations={"constant","sine","triangle","wobbly sine","snek","lorenz","henon","random walk","latoocarfian", "fbsine", "quad", "standardmap", "cookie"}
   self.outputs={"none"}
   self.input1=0
   self.input2=0
+  self.tog=0
 
   -- initiate the grid
   self.g=grid.connect()
@@ -173,7 +179,8 @@ function Wobble:init()
         params:get(i.."decay"),
         params:get(i.."sustain"),
         params:get(i.."release"),
-        params:get(i.."meta")
+        params:get(i.."meta"),
+        params:get(i.."meta2")
       )
       self:setmidi(i)
     end
@@ -200,7 +207,17 @@ function Wobble:init()
     end
     }
 
-    params:add{type="control",id=i.."meta",name="meta",controlspec=controlspec.new(0,300,'lin',0,0,'metas',0.01/300),action=function(v)
+    params:add{type="control",id=i.."meta",name="meta",controlspec=controlspec.new(-300,300,'lin',0,0,'metas',0.01/300),action=function(v)
+      if not do_update then 
+        do return end 
+      end
+      do_update=false
+      engine.meta(i,v)
+      do_update=true
+    end
+    }
+
+    params:add{type="control",id=i.."meta2",name="meta2",controlspec=controlspec.new(-300,300,'lin',0,0,'metas',0.01/300),action=function(v)
       if not do_update then 
         do return end 
       end
@@ -260,13 +277,22 @@ function Wobble:init()
   end
 
   crow.input[1].mode("stream")
-  crow.input[1].stream = function(v) 
+  crow.input[1].stream = function(v)
       self.input1 = v
-  end
 
+      do_update=false
+      curfreq = params:get("1freq")
+      engine.hz(1,v+curfreq)
+      do_update=true
+  end
   crow.input[2].mode("stream")
-  crow.input[2].stream = function(v) 
+  crow.input[2].stream = function(v)
       self.input2 = v
+
+      do_update=false
+      curfreq = params:get("2freq")
+      engine.hz(2,v+curfreq)
+      do_update=true
   end
 
   -- setup osc
@@ -290,14 +316,6 @@ function Wobble:init()
      end
    end
   end
-end
-
-function Wobble:crowinput1(v)
-    self.volts1 = v
-end
-
-function Wobble:crowinput1(v)
-    self.volts2 = v
 end
 
 function Wobble:setmidi(i)
@@ -329,6 +347,7 @@ function Wobble:get()
     min=params:get(i.."minval"),
     max=params:get(i.."maxval"),
     meta=params:get(i.."meta"),
+    meta2=params:get(i.."meta2"),
     midi=midiname,
     miditype=self.midi_types[params:get(i.."miditype")],
   }
