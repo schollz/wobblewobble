@@ -195,7 +195,7 @@ Engine_Wobble : CroneEngine {
             var mod,env;
             
             // latoocarfian 
-            mod=Clip.kr(LatoocarfianN.ar(hz*10,1,LFNoise2.kr(hz*10/20,1.5,1.5),LFNoise2.kr(hz*10/20,0.5,0.5),LFNoise2.kr(hz*10/20,0.5,0.5)).range(minval*1.02,maxval*0.98),minval,maxval);
+            mod=Clip.kr(LatoocarfianC.ar(hz*10,1,LFNoise2.kr(hz*10/20,1.5,1.5),LFNoise2.kr(hz*10/20,0.5,0.5),LFNoise2.kr(hz*10/20,0.5,0.5)).range(minval*1.02,maxval*0.98),minval,maxval);
             //mod=VarLag.kr(LFBrownNoise0.kr(hz),1/hz,warp:\sine).range(minval,maxval);
             env = EnvGen.kr(
                 Env.new(
@@ -217,7 +217,7 @@ Engine_Wobble : CroneEngine {
     level=5,attack=0.2,sustain=0.9,decay=0.1,release=0.5;
             var mod,env;
             // feedback sine 
-            mod=Clip.kr(FBSineN.ar( hz*10, 1, LFNoise2.kr(hz*10/20, 0.5), LFNoise2.kr(hz*10/20, 0.05, 1.05), LFNoise2.kr(hz*10/20, 0.3, 0.3)).range(minval*1.02,maxval*0.98),minval,maxval);
+            mod=Clip.kr(FBSineC.ar( hz*10, 1, LFNoise2.kr(hz*10/20, 0.5), LFNoise2.kr(hz*10/20, 0.05, 1.05), LFNoise2.kr(hz*10/20, 0.3, 0.3)).range(minval*1.02,maxval*0.98),minval,maxval);
             //mod=VarLag.kr(LFBrownNoise0.kr(hz),1/hz,warp:\sine).range(minval,maxval);
             env = EnvGen.kr(
                 Env.new(
