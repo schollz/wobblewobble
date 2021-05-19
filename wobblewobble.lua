@@ -16,7 +16,7 @@ ww=include("wobblewobble/lib/wobblewobble")
 holdk1=false
 
 function init()
-  ww:init()
+  ww:init({use_grid=true})
   clock.run(function()
     while true do
       clock.sleep(1/15)

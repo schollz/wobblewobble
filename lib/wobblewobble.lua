@@ -3,9 +3,8 @@ local Wobble={}
 
 function Wobble:new(args)
   local l=setmetatable({},{__index=Wobble})
-  local args=args==nil and {} or args
-
-
+  local args=args==nil and {} or arg
+  l.use_grid=args.use_grid or false
   return l
 end
 
@@ -79,14 +78,17 @@ function Wobble:init()
   self.outputs={"none"}
   self.input1=0
   self.input2=0
+  -- grid toggle
   self.tog=0
 
-  -- initiate the grid
-  self.g=grid.connect()
-  self.g.key=function(x,y,z)
-    self:grid_key(x,y,z)
+  if self.use_grid then
+    -- initiate the grid
+    self.g=grid.connect()
+    self.g.key=function(x,y,z)
+      self:grid_key(x,y,z)
+    end
+    self:grid_init()
   end
-  self:grid_init()
 
   for _,mod in ipairs(self.modulations) do
     table.insert(self.outputs,mod)
