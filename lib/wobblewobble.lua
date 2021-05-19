@@ -10,29 +10,20 @@ function Wobble:new(args)
 end
 
 function Wobble:grid_init()
-    self.g:led(1,1,15)
-
     for i=2,5 do
         self.g:led(1,i,15)
     end
-
     self.g:refresh()
 end
 
 function Wobble:grid_key(x,y,z)
     local currentout=params:get("crow")
 
-    if (x > 0 and x < 5) and y == 1 then
-        self.g:led(currentout,1,0)
-        self.g:led(x,1,15)
-        params:set("crow", x)
-    end
-
     if y > 1 and y < 6 then
         local crowmodkey = (y - 1).."modulation"
         local currentmod = params:get(crowmodkey)
 
-        if (x > 0 and x < #self.modulations) then
+        if (x > 0 and x <= #self.modulations) then
             self.g:led(currentmod, y, 0)
             self.g:led(x, y, 15)
             params:set(crowmodkey, x)
