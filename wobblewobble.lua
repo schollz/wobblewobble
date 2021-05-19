@@ -42,16 +42,32 @@ function key(k,z)
 end
 
 function enc(k,d)
+    print(k)
 	if k==1 then
 		params:delta(params:get("crow").."freq",d)
-	elseif k==2 then 
-		params:delta(params:get("crow").."minval",d)
-	elseif k==3 then
-		params:delta(params:get("crow").."maxval",d)
 	else
         -- fates specific, enc 4
-		params:delta(params:get("crow").."meta",d)
+        if k==4 then
+            if ww.tog == 0 then
+                params:delta(params:get("crow").."meta",d)
+            else
+                params:delta(params:get("crow").."meta2",d)
+            end
+        end
 	end
+    if ww.tog == 0 then
+        if k==2 then 
+            params:delta(params:get("crow").."minval",d)
+        elseif k==3 then
+            params:delta(params:get("crow").."maxval",d)
+        end
+    else
+        if k==2 then 
+            params:delta(params:get("crow").."meta",d)
+        elseif k==3 then
+            params:delta(params:get("crow").."meta2",d)
+        end
+    end
 end
 
 function redraw()
@@ -74,18 +90,58 @@ function redraw()
 	screen.text(s)
 	screen.stroke()
 
-	screen.level(8)
-    s = string.format("%.2fhz,%.2f-%.2fv %.2f %.1f/%.1f", cur.freq, cur.min, cur.max, cur.meta, ww.input1, ww.input2)
+    s = string.format("%.2fhz,%.2f - %.2fv", cur.freq, cur.min, cur.max)
+
+    -- ww.input1, ww.input2
 
 	if cur.name=="constant" then
 		s=string.format("%.2fhz %.2fv", cur.freq, cur.max)
 	end
 
+    if ww.tog == 0 then
+        fg = 0
+        bg = 8
+    else
+        fg = 8
+        bg = 0
+    end
+
+	screen.level(bg)
 	screen.rect(2,64-7,screen.text_extents(s)+4,10)
 	screen.fill()
-	screen.level(0)
+	screen.level(fg)
 	screen.move(4,64-1)
 	screen.text(s)
+	screen.stroke()
+
+    sm = string.format("%.2f %.2f", cur.meta, cur.meta2)
+
+    if ww.tog == 1 then
+        fg = 0
+        bg = 8
+    else
+        fg = 8
+        bg = 0
+    end
+
+	screen.level(bg)
+	screen.rect(128-screen.text_extents(sm)-3,64-7,128-screen.text_extents(sm)+4,10)
+	screen.fill()
+	screen.level(fg)
+	screen.move(128-screen.text_extents(sm)-1,64-1)
+	screen.text(sm)
+	screen.stroke()
+
+	screen.level(1)
+    si = string.format("%.2f", ww.input2)
+	screen.move(128-screen.text_extents(si)-1,8)
+	screen.text(si)
+	screen.stroke()
+
+	screen.level(1)
+    si = string.format("%.2f", ww.input1)
+	screen.move(128-screen.text_extents(si)-22,8)
+	screen.text(si)
 	screen.stroke()
 
 	screen.level(8)
