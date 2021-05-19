@@ -27,8 +27,10 @@ end
 function key(k,z)
 	if k==2 and z==1 then 
 		params:delta(params:get("crow").."modulation",-1)
+		params:set(params:get("crow").."meta",0)
 	elseif k==3 and z==1 then 
 		params:delta(params:get("crow").."modulation",1)
+		params:set(params:get("crow").."meta",0)
 	elseif k==1 and z==1 then
 		if params:get("crow")==4 then 
 			params:set("crow",1)
@@ -47,7 +49,8 @@ function enc(k,d)
 	elseif k==3 then
 		params:delta(params:get("crow").."maxval",d)
 	else
-		params:delta("crow",d)
+        -- fates specific, enc 4
+		params:delta(params:get("crow").."meta",d)
 	end
 end
 
@@ -72,7 +75,7 @@ function redraw()
 	screen.stroke()
 
 	screen.level(8)
-    s = string.format("%.2fhz,%.2f - %.2fv + %.1f/%.1f", cur.freq, cur.min, cur.max, ww.input1, ww.input2)
+    s = string.format("%.2fhz,%.2f-%.2fv %.2f %.1f/%.1f", cur.freq, cur.min, cur.max, cur.meta, ww.input1, ww.input2)
 
 	if cur.name=="constant" then
 		s=string.format("%.2fhz %.2fv", cur.freq, cur.max)

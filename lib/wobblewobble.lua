@@ -5,7 +5,42 @@ function Wobble:new(args)
   local l=setmetatable({},{__index=Wobble})
   local args=args==nil and {} or args
 
+
   return l
+end
+
+function Wobble:grid_init()
+    self.g:led(1,1,15)
+
+    for i=2,5 do
+        self.g:led(1,i,15)
+    end
+
+    self.g:refresh()
+end
+
+function Wobble:grid_key(x,y,z)
+    local currentout=params:get("crow")
+
+    if (x > 0 and x < 5) and y == 1 then
+        self.g:led(currentout,1,0)
+        self.g:led(x,1,15)
+        params:set("crow", x)
+    end
+
+    if y > 1 and y < 6 then
+        local crowmodkey = (y - 1).."modulation"
+        local currentmod = params:get(crowmodkey)
+
+        if (x > 0 and x < #self.modulations) then
+            self.g:led(currentmod, y, 0)
+            self.g:led(x, y, 15)
+            params:set(crowmodkey, x)
+            params:set("crow", y - 1)
+        end
+    end
+
+    self.g:refresh()
 end
 
 function Wobble:rebuild_menu(v)
@@ -21,7 +56,7 @@ function Wobble:rebuild_menu(v)
   for _,param_name in ipairs(self.midi_names) do
     for i=1,4 do
       if i==v and params:get(i.."miditype")==1 then
-        print("showing "..v)
+        --print("showing "..v)
         params:show(i..param_name)
       else
         params:hide(i..param_name)
@@ -40,14 +75,21 @@ end
 
 function Wobble:init()
   -- menu stuff
-  self.param_names={"minval","maxval","freq","period","modulation","midiin","miditype","clampmin","clampmax"}
+  self.param_names={"minval","maxval","freq","period","modulation","midiin","miditype","clampmin","clampmax","meta"}
   self.midi_names={"level","attack","decay","sustain","release"}
   self.midi_types={"envelope","any note","top note"}
   -- setup modulations
-  self.modulations={"constant","sine","triangle","wobbly sine","snek","lorenz","henon","random walk","latoocarfian", "fbsine"}
+  self.modulations={"constant","sine","triangle","wobbly sine","snek","lorenz","henon","random walk","latoocarfian", "fbsine", "quad"}
   self.outputs={"none"}
   self.input1=0
   self.input2=0
+
+  -- initiate the grid
+  self.g=grid.connect()
+  self.g.key=function(x,y,z)
+    self:grid_key(x,y,z)
+  end
+  self:grid_init()
 
   for _, mod in ipairs(self.modulations) do 
     table.insert(self.outputs,mod)
@@ -139,7 +181,8 @@ function Wobble:init()
         params:get(i.."attack"),
         params:get(i.."decay"),
         params:get(i.."sustain"),
-        params:get(i.."release")
+        params:get(i.."release"),
+        params:get(i.."meta")
       )
       self:setmidi(i)
     end
@@ -165,6 +208,17 @@ function Wobble:init()
       do_update=true
     end
     }
+
+    params:add{type="control",id=i.."meta",name="meta",controlspec=controlspec.new(0,300,'lin',0,0,'metas',0.01/300),action=function(v)
+      if not do_update then 
+        do return end 
+      end
+      do_update=false
+      engine.meta(i,v)
+      do_update=true
+    end
+    }
+
     params:add{type="control",id=i.."minval",name="lfo min",controlspec=controlspec.new(-5,10,'lin',0,0,'',0.01/15),action=function(v)
       engine.minval(i,v)
     end
@@ -283,6 +337,7 @@ function Wobble:get()
     wf=self.wf[i],freq=params:get(i.."freq"),
     min=params:get(i.."minval"),
     max=params:get(i.."maxval"),
+    meta=params:get(i.."meta"),
     midi=midiname,
     miditype=self.midi_types[params:get(i.."miditype")],
   }
