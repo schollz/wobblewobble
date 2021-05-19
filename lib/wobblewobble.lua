@@ -277,13 +277,22 @@ function Wobble:init()
   end
 
   crow.input[1].mode("stream")
-  crow.input[1].stream = function(v) 
+  crow.input[1].stream = function(v)
       self.input1 = v
-  end
 
+      do_update=false
+      curfreq = params:get("1freq")
+      engine.hz(1,v+curfreq)
+      do_update=true
+  end
   crow.input[2].mode("stream")
-  crow.input[2].stream = function(v) 
+  crow.input[2].stream = function(v)
       self.input2 = v
+
+      do_update=false
+      curfreq = params:get("2freq")
+      engine.hz(2,v+curfreq)
+      do_update=true
   end
 
   -- setup osc
@@ -307,14 +316,6 @@ function Wobble:init()
      end
    end
   end
-end
-
-function Wobble:crowinput1(v)
-    self.volts1 = v
-end
-
-function Wobble:crowinput1(v)
-    self.volts2 = v
 end
 
 function Wobble:setmidi(i)
