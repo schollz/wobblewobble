@@ -44,8 +44,11 @@ function Wobble:init()
   self.midi_names={"level","attack","decay","sustain","release"}
   self.midi_types={"envelope","any note","top note"}
   -- setup modulations
-  self.modulations={"constant","sine","triangle","wobbly sine","snek","lorenz","henon","random walk"}
+  self.modulations={"constant","sine","triangle","wobbly sine","snek","lorenz","henon","random walk","latoocarfian", "fbsine"}
   self.outputs={"none"}
+  self.input1=0
+  self.input2=0
+
   for _, mod in ipairs(self.modulations) do 
     table.insert(self.outputs,mod)
   end
@@ -211,6 +214,16 @@ function Wobble:init()
     crow.output[i].slew=1/15 -- slew is equal to update time in supercollider
   end
 
+  crow.input[1].mode("stream")
+  crow.input[1].stream = function(v) 
+      self.input1 = v
+  end
+
+  crow.input[2].mode("stream")
+  crow.input[2].stream = function(v) 
+      self.input2 = v
+  end
+
   -- setup osc
   self.wf={}
   for i=1,4 do 
@@ -232,6 +245,14 @@ function Wobble:init()
      end
    end
   end
+end
+
+function Wobble:crowinput1(v)
+    self.volts1 = v
+end
+
+function Wobble:crowinput1(v)
+    self.volts2 = v
 end
 
 function Wobble:setmidi(i)

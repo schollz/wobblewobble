@@ -188,6 +188,52 @@ Engine_Wobble : CroneEngine {
         }).add;
 
 
+        SynthDef("modulator9",{
+    arg hz=1,minval=0,maxval=1,index=1,
+    midigate=0,midival=0,addenv=0,addmidi=1,
+    level=5,attack=0.2,sustain=0.9,decay=0.1,release=0.5;
+            var mod,env;
+            
+            // latoocarfian 
+            mod=Clip.kr(LatoocarfianN.ar(hz*10,1,LFNoise2.kr(hz*10/20,1.5,1.5),LFNoise2.kr(hz*10/20,0.5,0.5),LFNoise2.kr(hz*10/20,0.5,0.5)).range(minval*1.02,maxval*0.98),minval,maxval);
+            //mod=VarLag.kr(LFBrownNoise0.kr(hz),1/hz,warp:\sine).range(minval,maxval);
+            env = EnvGen.kr(
+                Env.new(
+                    levels: [0,level,sustain*level,0],
+                    times: [attack,decay,release],
+                    curve:\cubed,
+                    releaseNode: 2,
+                ),
+                gate: midigate,
+            );
+            mod = mod + (addenv*env);
+            mod = mod + (addmidi*((midival-48)/12));
+            SendTrig.kr(Impulse.kr(15),index,mod);      
+        }).add;
+
+        SynthDef("modulator10",{
+    arg hz=1,minval=0,maxval=1,index=1,
+    midigate=0,midival=0,addenv=0,addmidi=1,
+    level=5,attack=0.2,sustain=0.9,decay=0.1,release=0.5;
+            var mod,env;
+            // feedback sine 
+            mod=Clip.kr(FBSineN.ar( hz*10, 1, LFNoise2.kr(hz*10/20, 0.5), LFNoise2.kr(hz*10/20, 0.05, 1.05), LFNoise2.kr(hz*10/20, 0.3, 0.3)).range(minval*1.02,maxval*0.98),minval,maxval);
+            //mod=VarLag.kr(LFBrownNoise0.kr(hz),1/hz,warp:\sine).range(minval,maxval);
+            env = EnvGen.kr(
+                Env.new(
+                    levels: [0,level,sustain*level,0],
+                    times: [attack,decay,release],
+                    curve:\cubed,
+                    releaseNode: 2,
+                ),
+                gate: midigate,
+            );
+            mod = mod + (addenv*env);
+            mod = mod + (addmidi*((midival-48)/12));
+            SendTrig.kr(Impulse.kr(15),index,mod);      
+        }).add;
+
+
         context.server.sync;
 
         osfunWobble = OSCFunc({ 

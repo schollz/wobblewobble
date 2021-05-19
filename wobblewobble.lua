@@ -44,8 +44,10 @@ function enc(k,d)
 		params:delta(params:get("crow").."freq",d)
 	elseif k==2 then 
 		params:delta(params:get("crow").."minval",d)
-	else
+	elseif k==3 then
 		params:delta(params:get("crow").."maxval",d)
+	else
+		params:delta("crow",d)
 	end
 end
 
@@ -70,7 +72,9 @@ function redraw()
 	screen.stroke()
 
 	screen.level(8)
-	s=(math.floor(cur.freq*1000)/1000).."hz, "..(math.floor(cur.min*100)/100).."-"..(math.floor(cur.max*100)/100).."v"
+    s = string.format("%.2fhz,%.2f - %.2fv + %.1f/%.1f", cur.freq, cur.min, cur.max, ww.input1, ww.input2)
+
+	--s=(math.floor(cur.freq*1000)/1000).."hz, "..(math.floor(cur.min*100)/100).." - "..(math.floor(cur.max*100)/100).."v".." + "..(math.floor(ww.input1*100)/100)
 	if cur.name=="constant" then
 		s=(math.floor(cur.freq*1000)/1000).."hz, "..(math.floor(cur.max*100)/100).."v"
 	end
@@ -92,7 +96,6 @@ function redraw()
 	screen.move(4,8)
 	screen.text(s)
 	screen.stroke()
-
 
 	screen.update()
 end
