@@ -70,7 +70,7 @@ function enc(k,d)
       end
     end
   end
-  if ww.tog==0 then
+  if ww.tog==0 and not holdk1 then
     if k==2 then
       params:delta(params:get("crow").."minval",d)
     elseif k==3 then
