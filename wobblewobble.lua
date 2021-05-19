@@ -113,7 +113,7 @@ function redraw()
     s=string.format("%.2fhz %.2fv",cur.freq,cur.max)
   end
 
-  if ww.tog==0 then
+  if ww.tog==0 or holdk1 then
     fg=0
     bg=8
   else
@@ -131,7 +131,7 @@ function redraw()
 
   sm=string.format("%.2f %.2f",cur.meta,cur.meta2)
 
-  if ww.tog==1 then
+  if ww.tog==1 or holdk1 then
     fg=0
     bg=8
   else
@@ -139,13 +139,16 @@ function redraw()
     bg=0
   end
 
-  screen.level(bg)
-  screen.rect(128-screen.text_extents(sm)-3,64-7,128-screen.text_extents(sm)+4,10)
-  screen.fill()
-  screen.level(fg)
-  screen.move(128-screen.text_extents(sm)-1,64-1)
-  screen.text(sm)
-  screen.stroke()
+  -- only show if toggled
+  if ww.tog==1 or holdk1 then
+    screen.level(bg)
+    screen.rect(128-screen.text_extents(sm)-3,64-7,128-screen.text_extents(sm)+4,10)
+    screen.fill()
+    screen.level(fg)
+    screen.move(128-screen.text_extents(sm)-1,64-1)
+    screen.text(sm)
+    screen.stroke()
+  end
 
   screen.level(1)
   si=string.format("%.2f",ww.input2)
