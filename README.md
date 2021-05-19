@@ -13,6 +13,8 @@ assign each of the four crow outputs one of many different types of slowly oscil
 - lorenzian
 - henonian
 - random walk
+- latoocarfian
+- fbsine
 
 each output can also be configured to respond to midi input, either modulating the voltage level via pitch (any note, or top note), or modulating the voltage level from an envelope.
 
