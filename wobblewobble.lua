@@ -14,6 +14,7 @@
 
 ww=include("wobblewobble/lib/wobblewobble")
 holdk1=false
+show_input=0
 
 function init()
   ww:init({use_grid=true})
@@ -29,13 +30,23 @@ function key(k,z)
   if k>1 then
     if holdk1 then
       if k==2 and z==1 then
-        if params:get("crow")==1 then
+        if params:get("crow")==1 and show_input==0 then
+          show_input=2
+        elseif params:get("crow")==1 and show_input==2 then
+          show_input=1
+        elseif params:get("crow")==1 and show_input==1 then
+          show_input=0
           params:set("crow",4)
         else
           params:delta("crow",-1)
         end
       elseif k==3 and z==1 then
-        if params:get("crow")==4 then
+        if params:get("crow")==4 and show_input==0 then
+          show_input=1
+        elseif params:get("crow")==4 and show_input==1 then 
+          show_input=2
+        elseif params:get("crow")==4 and show_input==2 then 
+          show_input=0
           params:set("crow",1)
         else
           params:delta("crow",1)
@@ -87,7 +98,7 @@ end
 
 function redraw()
   screen.clear()
-  local cur=ww:get()
+  local cur=ww:get(show_input)
 
   screen.level(15)
   for i=1,128 do
@@ -98,12 +109,14 @@ function redraw()
 
   screen.level(8)
   local s=cur.name
-  screen.rect(2,64-20,screen.text_extents(s)+4,10)
-  screen.fill()
-  screen.level(0)
-  screen.move(4,64-13)
-  screen.text(s)
-  screen.stroke()
+  if s~="" then
+    screen.rect(2,64-20,screen.text_extents(s)+4,10)
+    screen.fill()
+    screen.level(0)
+    screen.move(4,64-13)
+    screen.text(s)
+    screen.stroke()
+  end
 
   s=string.format("%.2fhz,%.2f - %.2fv",cur.freq,cur.min,cur.max)
 
@@ -140,7 +153,7 @@ function redraw()
   end
 
   -- only show if toggled
-  if ww.tog==1 or holdk1 then
+  if (ww.tog==1 or holdk1) and (show_input==0) then
     screen.level(bg)
     screen.rect(128-screen.text_extents(sm)-3,64-7,128-screen.text_extents(sm)+4,10)
     screen.fill()
@@ -150,20 +163,24 @@ function redraw()
     screen.stroke()
   end
 
-  screen.level(1)
-  si=string.format("%.2f",ww.input2)
-  screen.move(128-screen.text_extents(si)-1,8)
-  screen.text(si)
-  screen.stroke()
+  -- screen.level(1)
+  -- si=string.format("%.2f",ww.input2)
+  -- screen.move(128-screen.text_extents(si)-1,8)
+  -- screen.text(si)
+  -- screen.stroke()
 
-  screen.level(1)
-  si=string.format("%.2f",ww.input1)
-  screen.move(128-screen.text_extents(si)-22,8)
-  screen.text(si)
-  screen.stroke()
+  -- screen.level(1)
+  -- si=string.format("%.2f",ww.input1)
+  -- screen.move(128-screen.text_extents(si)-22,8)
+  -- screen.text(si)
+  -- screen.stroke()
 
   screen.level(8)
-  local s="crow "..cur.crow
+  local s="crow "
+  if show_input > 0 then 
+    s=s.."input "
+  end
+  s=s..cur.crow
   if cur.midi~="" then
     s=s.." < "..cur.midi.."/"..cur.miditype
   end

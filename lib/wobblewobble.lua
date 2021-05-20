@@ -69,6 +69,7 @@ function Wobble:rebuild_menu(v)
 end
 
 function Wobble:init()
+  self.update_rate=15
   -- menu stuff
   self.param_names={"minval","maxval","freq","period","modulation","midiin","miditype","clampmin","clampmax","meta","meta2"}
   self.midi_names={"level","attack","decay","sustain","release"}
@@ -76,8 +77,6 @@ function Wobble:init()
   -- setup modulations
   self.modulations={"constant","sine","triangle","wobbly sine","snek","lorenz","henon","random walk","latoocarfian","fbsine","quad","standardmap","cookie"}
   self.outputs={"none"}
-  self.input1=0
-  self.input2=0
   -- grid toggle
   self.tog=0
 
@@ -167,9 +166,9 @@ function Wobble:init()
   params:add_group("WOBBLE",1+13*4)
   params:add{type="option",id="crow",name="crow",options={"1","2","3","4"},default=1,action=function(v)
     self:rebuild_menu(v)
-      if _menu.mode then
-        _menu.rebuild_params()
-      end
+    if _menu.mode then
+      _menu.rebuild_params()
+    end
   end}
   for i=1,4 do
     params:add{type="option",id=i.."modulation",name="modulation",options=self.modulations,default=1,action=function(v)
@@ -263,38 +262,41 @@ function Wobble:init()
     end}
   end
 
-  -- setup crow
-  for i=1,4 do
-    crow.output[i].slew=1/15 -- slew is equal to update time in supercollider
-  end
-
-  crow.input[1].mode("stream")
-  crow.input[1].stream=function(v)
-    self.input1=v
-
-    do_update=false
-    curfreq=params:get("1freq")
-    engine.hz(1,v+curfreq)
-    do_update=true
-  end
-  crow.input[2].mode("stream")
-  crow.input[2].stream=function(v)
-    self.input2=v
-
-    do_update=false
-    curfreq=params:get("2freq")
-    engine.hz(2,v+curfreq)
-    do_update=true
-  end
-
-  -- setup osc
+  -- setup crow outputs
   self.wf={}
   for i=1,4 do
     self.wf[i]={}
     for j=1,128 do
       self.wf[i][j]=0
     end
+    crow.output[i].slew=1/self.update_rate -- slew is equal to update time in supercollider
   end
+
+  -- setup crow inputs
+  self.wfin={}
+  for i=1,2 do
+    self.wfin[i]={}
+    for j=1,128 do
+      self.wfin[i][j]=0
+    end
+    crow.input[i].mode("stream",1/self.update_rate)
+    crow.input[i].stream=function(v)
+      for j=1,127 do
+        self.wfin[i][j]=self.wfin[i][j+1]
+      end
+      self.wfin[i][128]=math.floor(util.linlin(-5,10,64,1,v))
+
+      -- TODO: make this optional
+      -- do_update=false
+      -- curfreq=params:get("1freq")
+      -- engine.hz(i,v+curfreq)
+      -- do_update=true
+    end
+  end
+
+
+
+
   osc.event=function(path,args,from)
     if path=="wobble" then
       local i=tonumber(args[1])
@@ -308,6 +310,7 @@ function Wobble:init()
       end
     end
   end
+
 
 end
 
@@ -327,23 +330,47 @@ function Wobble:setmidi(i)
   end
 end
 
-function Wobble:get()
-  local i=params:get("crow")
-  local midiname=self.mididevice_list[params:get(i.."midiin")]
-  if midiname=="none" then
-    midiname=""
+function Wobble:get(input_num)
+  if input_num>0 then
+    -- return crow input
+    return {
+      crow=input_num,
+      name="",
+      freq=1/15,
+      min=-5,
+      max=10,
+      meta=0,
+      meta2=0,
+      wf=self.wfin[input_num],
+      miditype="",
+      midi="",
+    }
+  else
+    local i=params:get("crow")
+    if self.wf==nil or self.wf[i]==nil then
+      do return end
+    end
+    local midiname=self.mididevice_list[params:get(i.."midiin")]
+    if midiname=="none" then
+      midiname=""
+    end
+    return {
+      crow=i,
+      name=self.modulations[params:get(i.."modulation")],
+      wf=self.wf[i],
+      freq=params:get(i.."freq"),
+      min=params:get(i.."minval"),
+      max=params:get(i.."maxval"),
+      meta=params:get(i.."meta"),
+      meta2=params:get(i.."meta2"),
+      midi=midiname,
+      miditype=self.midi_types[params:get(i.."miditype")],
+    }
   end
-  return {
-    crow=i,
-    name=self.modulations[params:get(i.."modulation")],
-    wf=self.wf[i],freq=params:get(i.."freq"),
-    min=params:get(i.."minval"),
-    max=params:get(i.."maxval"),
-    meta=params:get(i.."meta"),
-    meta2=params:get(i.."meta2"),
-    midi=midiname,
-    miditype=self.midi_types[params:get(i.."miditype")],
-  }
 end
 
+
+
 return Wobble
+
+
