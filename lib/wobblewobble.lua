@@ -167,7 +167,9 @@ function Wobble:init()
   params:add_group("WOBBLE",1+13*4)
   params:add{type="option",id="crow",name="crow",options={"1","2","3","4"},default=1,action=function(v)
     self:rebuild_menu(v)
-    _menu.rebuild_params()
+      if _menu.mode then
+        _menu.rebuild_params()
+      end
   end}
   for i=1,4 do
     params:add{type="option",id=i.."modulation",name="modulation",options=self.modulations,default=1,action=function(v)
@@ -233,12 +235,16 @@ function Wobble:init()
     params:add{type="option",id=i.."midiin",name="midi input",options=self.mididevice_list,default=1,action=function(v)
       self:setmidi(i)
       self:rebuild_menu(i)
-      _menu.rebuild_params()
+      if _menu.mode then
+        _menu.rebuild_params()
+      end
     end}
     params:add{type="option",id=i.."miditype",name="midi type",options=self.midi_types,default=1,action=function(v)
       self:setmidi(i)
       self:rebuild_menu(i)
-      _menu.rebuild_params()
+      if _menu.mode then
+        _menu.rebuild_params()
+      end
     end}
     params:add{type="control",id=i.."level",name="level",controlspec=controlspec.new(0,10,'lin',0,5,'v',0.1/10),action=function(v)
       engine.level(i,v)

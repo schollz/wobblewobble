@@ -312,7 +312,7 @@ Engine_Wobble : CroneEngine {
             Synth("modulator1",[\index,i+1], target:context.xg);
         });
 
-        this.addCommand("mod","iiffffffff", { arg msg;
+        this.addCommand("mod","iiffffffffff", { arg msg;
             modulatorsWobble[msg[1]-1].free;
             modulatorsWobble[msg[1]-1]=Synth("modulator"++msg[2],[
                 \index,msg[1],
@@ -323,7 +323,9 @@ Engine_Wobble : CroneEngine {
                 \attack,msg[7],
                 \sustain,msg[8],
                 \decay,msg[9],
-                \release,msg[10]
+                \release,msg[10],
+                \meta,msg[11],
+                \meta2,msg[12]
             ], target:context.xg)
         });
 
