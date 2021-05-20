@@ -1,16 +1,16 @@
--- wobble v0.0.1
+-- wobblewobble v0.0.1
 -- wobbly voltages for crow
 --
--- llllllll.co/t/wobble
+-- llllllll.co/t/wobblewobble
 --
 --
 --
 --    ▼ instructions below ▼
--- K1+K2/K3 switches crow
--- K2/K3 switch modulator
+-- hold K1+K2/K3 to switch crow
+-- press K2/K3 to switch mod
 -- E1 changes frequency
--- E2 changes min
--- E3 changes max
+-- E2/E3changes lfo min/max
+-- K1+E2 or K1+E3 changes meta
 
 ww=include("wobblewobble/lib/wobblewobble")
 holdk1=false

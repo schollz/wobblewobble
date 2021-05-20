@@ -2,9 +2,13 @@
 
 slow oscillators for crow outputs.
 
-![image](https://user-images.githubusercontent.com/6550035/118399616-dee2bc80-b612-11eb-8594-5385cec7ea38.gif)
+![snek2](https://user-images.githubusercontent.com/6550035/118997986-ee794280-b93d-11eb-85a4-33cbdbe4b0b6.gif)
 
-assign each of the four crow outputs one of many different types of slowly oscillating modulation sources. oscillators are configured in SuperCollider making it easy to configure / design / add new oscillators, including complex ones from the [chaotic UGens](https://doc.sccode.org/Browse.html#UGens%3EGenerators%3EChaotic). current oscillators:
+- assign each of the four crow outputs one of many different types of slowly oscillating modulation sources. 
+- configure crow as midi->CV or midi->envelope atop any oscillation (or none)
+- visualize slow oscillations from crow inputs (<7hz)
+
+oscillators are configured in SuperCollider making it easy to configure / design / add new oscillators, including complex ones from the [chaotic UGens](https://doc.sccode.org/Browse.html#UGens%3EGenerators%3EChaotic). current oscillators:
 
 #### constant
 
@@ -69,11 +73,11 @@ each output can also be configured to respond to midi input, either modulating t
 
 ### Documentation
 
-- hold K1 to switch crow
-- K2/K3 switch modulator
+- hold K1 and K2/K3 to switch crow
+- press K2/K3 to switch modulator
 - E1 changes frequency
-- E2 changes lfo min
-- E3 changes lfo max
+- E2/E3changes lfo min/max
+- K1+E2 or K1+E3 changes meta
 
 via the parameters menu, "`WOBBLE`", you can also...
 
