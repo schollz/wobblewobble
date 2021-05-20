@@ -30,11 +30,12 @@ function key(k,z)
   if k>1 then
     if holdk1 then
       if k==2 and z==1 then
+        print(params:get("crow"),show_input)
         if params:get("crow")==1 and show_input==0 then
           show_input=2
-        elseif params:get("crow")==1 and show_input==2 then
+        elseif show_input==2 then
           show_input=1
-        elseif params:get("crow")==1 and show_input==1 then
+        elseif show_input==1 then
           show_input=0
           params:set("crow",4)
         else
@@ -43,9 +44,9 @@ function key(k,z)
       elseif k==3 and z==1 then
         if params:get("crow")==4 and show_input==0 then
           show_input=1
-        elseif params:get("crow")==4 and show_input==1 then
+        elseif show_input==1 then 
           show_input=2
-        elseif params:get("crow")==4 and show_input==2 then
+        elseif show_input==2 then 
           show_input=0
           params:set("crow",1)
         else
@@ -177,7 +178,7 @@ function redraw()
 
   screen.level(8)
   local s="crow "
-  if show_input>0 then
+  if show_input > 0 then 
     s=s.."input "
   end
   s=s..cur.crow
