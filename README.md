@@ -4,11 +4,14 @@ slow oscillators for crow outputs.
 
 ![snek2](https://user-images.githubusercontent.com/6550035/118997986-ee794280-b93d-11eb-85a4-33cbdbe4b0b6.gif)
 
+https://vimeo.com/553165797
+
 with wobblewobble you can...
 
 - assign each of the four crow outputs one of many different types of slowly oscillating modulation sources. 
 - configure crow as midi->CV or midi->envelope atop any oscillation (or none)
 - visualize slow oscillations from crow inputs (<7hz)
+
 
 ### Requirements
 
@@ -87,6 +90,9 @@ oscillators are configured in SuperCollider making it easy to configure / design
 
 ![gingerbread](https://user-images.githubusercontent.com/6550035/118861933-ebc11380-b891-11eb-96b3-118671315bd9.PNG)
 
+many many thanks to @proswell for the excellent additions (grid support, five more modulators, adding inputs, adding metas) as well as testing. 
+
+any other PRs are welcomed with open wings.
 
 
 ## download
