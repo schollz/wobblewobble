@@ -146,6 +146,18 @@ function Wobble:init()
               end
               if not have_notes then
                 engine.setmidi(i,0)
+              else
+                if params:get(i.."miditype")==3 then -- top note
+                  highest_note=-1
+                  for k,_ in pairs(notes) do
+                    if k>highest_note then
+                      highest_note=k
+                    end
+                  end
+                  if highest_note>-1 then
+                    engine.setmidi(i,highest_note)
+                  end
+                end
               end
             end
           end
