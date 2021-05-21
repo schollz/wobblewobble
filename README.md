@@ -4,9 +4,33 @@ slow oscillators for crow outputs.
 
 ![snek2](https://user-images.githubusercontent.com/6550035/118997986-ee794280-b93d-11eb-85a4-33cbdbe4b0b6.gif)
 
+with wobblewobble you can...
+
 - assign each of the four crow outputs one of many different types of slowly oscillating modulation sources. 
 - configure crow as midi->CV or midi->envelope atop any oscillation (or none)
 - visualize slow oscillations from crow inputs (<7hz)
+
+### Requirements
+
+- norns
+- crow
+
+### Documentation
+
+from the main norns screen you can:
+
+- hold K1 and K2/K3 to switch crow
+- press K2/K3 to switch modulator
+- E1 changes frequency
+- E2/E3changes lfo min/max
+- K1+E2 or K1+E3 changes meta
+
+the params menu has more options, including:
+
+- clamping the absolute minimum and maximum values
+- add midi input to control pitch (top note, any note) or add an envelope
+- meta params for the modulators
+- change slew rate
 
 oscillators are configured in SuperCollider making it easy to configure / design / add new oscillators, including complex ones from the [chaotic UGens](https://doc.sccode.org/Browse.html#UGens%3EGenerators%3EChaotic). current oscillators:
 
@@ -64,26 +88,6 @@ oscillators are configured in SuperCollider making it easy to configure / design
 ![gingerbread](https://user-images.githubusercontent.com/6550035/118861933-ebc11380-b891-11eb-96b3-118671315bd9.PNG)
 
 
-each output can also be configured to respond to midi input, either modulating the voltage level via pitch (any note, or top note), or modulating the voltage level from an envelope.
-
-### Requirements
-
-- norns
-- crow
-
-### Documentation
-
-- hold K1 and K2/K3 to switch crow
-- press K2/K3 to switch modulator
-- E1 changes frequency
-- E2/E3changes lfo min/max
-- K1+E2 or K1+E3 changes meta
-
-via the parameters menu, "`WOBBLE`", you can also...
-
-- clamp the minimum and maximum values of the lfo
-- add midi input to control pitch (top note, any note) or add an envelope
-- meta param
 
 ## download
 
