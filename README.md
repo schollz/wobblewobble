@@ -1,6 +1,6 @@
 ## wobblewobble
 
-slow oscillators for crow outputs.
+slow oscillators for crow outputs from norns.
 
 ![snek2](https://user-images.githubusercontent.com/6550035/118997986-ee794280-b93d-11eb-85a4-33cbdbe4b0b6.gif)
 
@@ -12,6 +12,7 @@ with wobblewobble you can...
 - configure crow as midi->CV or midi->envelope atop any oscillation (or none)
 - visualize slow oscillations from crow inputs (<7hz)
 
+this script was also designed to be a library (all functionality is available in the menu) so that it can be imported for crow functionality from other scripts. no examples of this yet, though.
 
 ### Requirements
 
@@ -100,6 +101,8 @@ any other PRs are welcomed with open wings.
 ```
 ;install https://github.com/schollz/wobblewobble
 ```
+
+https://github.com/schollz/wobblewobble
 
 ## license 
 
