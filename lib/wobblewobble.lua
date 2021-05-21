@@ -163,7 +163,7 @@ function Wobble:init()
   end
 
   -- setup parameters
-  params:add_group("WOBBLE",1+13*4)
+  params:add_group("WOBBLE",1+16*4)
   params:add{type="option",id="crow",name="crow",options={"1","2","3","4"},default=1,action=function(v)
     self:rebuild_menu(v)
     if _menu.mode then
