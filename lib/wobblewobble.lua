@@ -71,7 +71,7 @@ end
 function Wobble:init()
   self.update_rate=15
   -- menu stuff
-  self.param_names={"minval","maxval","freq","period","modulation","midiin","miditype","clampmin","clampmax","meta","meta2"}
+  self.param_names={"minval","maxval","freq","period","modulation","midiin","miditype","clampmin","clampmax","meta","meta2","slewrate"}
   self.midi_names={"level","attack","decay","sustain","release"}
   self.midi_types={"envelope","any note","top note"}
   -- setup modulations
@@ -175,7 +175,7 @@ function Wobble:init()
   end
 
   -- setup parameters
-  params:add_group("WOBBLE",1+16*4)
+  params:add_group("WOBBLE",1+17*4)
   params:add{type="option",id="crow",name="crow",options={"1","2","3","4"},default=1,action=function(v)
     self:rebuild_menu(v)
     if _menu.mode then
@@ -243,6 +243,13 @@ function Wobble:init()
     end}
     params:add{type="control",id=i.."clampmin",name="clamp min",controlspec=controlspec.new(-5,10,'lin',0,-5,'',0.01/15)}
     params:add{type="control",id=i.."clampmax",name="clamp max",controlspec=controlspec.new(-5,10,'lin',0,10,'',0.01/15)}
+    params:add{type="control",id=i.."slewrate",name="slew rate",controlspec=controlspec.new(0,self.update_rate,'lin',0,self.update_rate,'/s',1/self.update_rate),action=function(v)
+      if v==0 then
+        crow.output[i].slew=0
+      else
+        crow.output[i].slew=1/v
+      end
+    end}
     params:add{type="option",id=i.."midiin",name="midi input",options=self.mididevice_list,default=1,action=function(v)
       self:setmidi(i)
       self:rebuild_menu(i)
@@ -281,7 +288,7 @@ function Wobble:init()
     for j=1,128 do
       self.wf[i][j]=0
     end
-    crow.output[i].slew=1/self.update_rate -- slew is equal to update time in supercollider
+    crow.output[i].slew=1/params:get(i.."slewrate") -- slew is equal to update time in supercollider
   end
 
   -- setup crow inputs
