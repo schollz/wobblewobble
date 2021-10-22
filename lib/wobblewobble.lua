@@ -75,7 +75,7 @@ function Wobble:init()
   self.midi_names={"level","attack","decay","sustain","release"}
   self.midi_types={"envelope","any note","top note"}
   -- setup modulations
-  self.modulations={"constant","sine","triangle","wobbly sine","snek","lorenz","henon","random walk","latoocarfian","fbsine","quad","standardmap","cookie"}
+  self.modulations={"constant","sine","triangle","wobbly sine","snek","lorenz","henon","random walk","latoocarfian","fbsine","quad","standardmap","cookie","pulse"}
   self.outputs={"none"}
   -- grid toggle
   self.tog=0
@@ -335,15 +335,12 @@ end
 
 function Wobble:setmidi(i)
   if params:get(i.."midiin")==1 then
-    print("adding nothing")
     engine.addenv(i,0)
     engine.addmidi(i,0)
   elseif params:get(i.."miditype")==1 then
-    print("adding env")
     engine.addenv(i,1)
     engine.addmidi(i,0)
   else
-    print("adding midi")
     engine.addenv(i,0)
     engine.addmidi(i,1)
   end

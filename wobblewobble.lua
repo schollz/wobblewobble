@@ -30,7 +30,6 @@ function key(k,z)
   if k>1 then
     if holdk1 then
       if k==2 and z==1 then
-        print(params:get("crow"),show_input)
         if params:get("crow")==1 and show_input==0 then
           show_input=2
         elseif show_input==2 then
@@ -69,7 +68,6 @@ function key(k,z)
 end
 
 function enc(k,d)
-  print(k)
   if k==1 then
     params:delta(params:get("crow").."freq",d)
   else

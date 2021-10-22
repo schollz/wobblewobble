@@ -300,6 +300,27 @@ Engine_Wobble : CroneEngine {
             mod = mod + (addmidi*((midival-48)/12));
             SendTrig.kr(Impulse.kr(15),index,mod);      
         }).add;
+        
+        SynthDef("modulator14",{
+    arg hz=1,minval=0,maxval=1,index=1,
+    midigate=0,midival=0,addenv=0,addmidi=1,
+    level=5,attack=0.2,sustain=0.9,decay=0.1,release=0.5,meta=0,meta2=0;
+            var mod,env;
+            // pulse
+            mod=LFPulse.kr(hz,width:LinLin.kr(Clip.kr(meta,-1,1),-1,1,0,1)).range(minval*1.02,maxval*0.98);
+            env = EnvGen.kr(
+                Env.new(
+                    levels: [0,level,sustain*level,0],
+                    times: [attack,decay,release],
+                    curve:\cubed,
+                    releaseNode: 2,
+                ),
+                gate: midigate,
+            );
+            mod = mod + (addenv*env);
+            mod = mod + (addmidi*((midival-48)/12));
+            SendTrig.kr(Impulse.kr(15),index,mod);      
+        }).add;
         context.server.sync;
 
         osfunWobble = OSCFunc({ 
