@@ -1,4 +1,4 @@
--- wobblewobble v0.1.0
+-- wobblewobble v0.2.0
 -- wobbly voltages for crow
 --
 -- llllllll.co/t/wobblewobble
